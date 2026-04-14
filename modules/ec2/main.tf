@@ -187,7 +187,7 @@ resource "aws_instance" "this" {
   #      }
   #    )
   #  }
-  }
+  #}
 
   # Drift detection and lifecycle management
   lifecycle {
