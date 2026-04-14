@@ -39,7 +39,7 @@ locals {
           name_suffix   = volume.name_suffix
           volume_type   = volume.volume_type
           volume_size   = volume.volume_size
-          volume_iops   = try(volume.volume_iops, null)
+          iops   = try(volume.volume_iops, null)
           throughput    = try(volume.throughput, null)
           kms_key_id    = try(volume.kms_key_id, null)
         }
@@ -153,7 +153,7 @@ resource "aws_instance" "this" {
   root_block_device {
     volume_type = var.root_volume.volume_type
     volume_size = var.root_volume.volume_size
-    volume_iops = try(var.root_volume.volume_iops, null)
+    iops = try(var.root_volume.volume_iops, null)
     throughput  = try(var.root_volume.throughput, null)
     delete_on_termination = try(var.root_volume.delete_on_termination, true)
     encrypted   = true # Force encryption
@@ -175,7 +175,7 @@ resource "aws_instance" "this" {
       device_name = ebs_block_device.value.device_name
       volume_type = ebs_block_device.value.volume_type
       volume_size = ebs_block_device.value.volume_size
-      volume_iops = ebs_block_device.value.volume_iops
+      iops = ebs_block_device.value.volume_iops
       encrypted   = true # Force encryption
       kms_key_id  = ebs_block_device.value.kms_key_id
 
