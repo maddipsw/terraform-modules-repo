@@ -208,7 +208,7 @@ resource "aws_instance" "this" {
     ]
 
     # Prevent accidental deletion
-    prevent_destroy = var.protect_from_destroy # Set to true in production
+    prevent_destroy = false # Set to true in production
   }
 
   # Instance tags - Name tag uses computed name without hyphens
@@ -243,7 +243,7 @@ resource "aws_ebs_volume" "additional" {
 
   lifecycle {
     # Prevent accidental deletion
-    prevent_destroy = var.protect_data_volumes # Set to true in production
+    prevent_destroy = false # Set to true in production
 
     # Ignore size changes if managed by auto-scaling
     ignore_changes = []
