@@ -169,24 +169,24 @@ resource "aws_instance" "this" {
   }
 
   # Additional EBS volumes with forced encryption (inline - for initial deployment only)
-  dynamic "ebs_block_device" {
-    for_each = var.inline_ebs_block_devices
-    content {
-      device_name = ebs_block_device.value.device_name
-      volume_type = ebs_block_device.value.volume_type
-      volume_size = ebs_block_device.value.volume_size
-      iops = ebs_block_device.value.volume_iops
-      encrypted   = true # Force encryption
-      kms_key_id  = ebs_block_device.value.kms_key_id
+  #dynamic "ebs_block_device" {
+  #  for_each = var.inline_ebs_block_devices
+  #  content {
+  #    device_name = ebs_block_device.value.device_name
+  #    volume_type = ebs_block_device.value.volume_type
+  #    volume_size = ebs_block_device.value.volume_size
+  #    iops = ebs_block_device.value.volume_iops
+  #    encrypted   = true # Force encryption
+  #    kms_key_id  = ebs_block_device.value.kms_key_id
 
-      tags = merge(
-        var.tags,
-        var.volume_tags,
-        {
-          Name = "${each.key}-${ebs_block_device.value.name_suffix}"
-        }
-      )
-    }
+  #    tags = merge(
+  #      var.tags,
+  #      var.volume_tags,
+  #      {
+  #        Name = "${each.key}-${ebs_block_device.value.name_suffix}"
+  #      }
+  #    )
+  #  }
   }
 
   # Drift detection and lifecycle management
