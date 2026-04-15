@@ -50,7 +50,7 @@ variable "instance_types_by_name" {
   default     = {}
 
   validation {
-    condition     = alltrue([for v in values(var.instance_types_by_name) : length(trim(v)) > 0])
+    condition = alltrue([for v in values(var.instance_types_by_name) : length(trimspace(v))> 0])
     error_message = "All values in instance_types_by_name must be non-empty instance type strings."
   }
 }
