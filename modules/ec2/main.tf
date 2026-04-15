@@ -227,7 +227,7 @@ resource "aws_ebs_volume" "additional" {
   availability_zone = aws_instance.this[each.value.instance_name].availability_zone
   type              = each.value.volume_type
   size              = each.value.volume_size
-  iops              = each.value.volume_iops
+  iops              = each.value.iops
   throughput        = each.value.throughput
   encrypted         = true
   kms_key_id        = each.value.kms_key_id
