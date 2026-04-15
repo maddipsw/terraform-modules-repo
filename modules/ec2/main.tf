@@ -102,8 +102,8 @@ check "additional_ebs_settings_valid" {
       for v in var.ebs_block_devices : (
         contains(["gp2", "gp3", "io1", "io2", "st1", "sc1", "standard"], v.volume_type) &&
         v.volume_size > 0 &&
-        length(trim(v.device_name)) > 0 &&
-        length(trim(v.name_suffix)) > 0 &&
+        length(trimspace(v.device_name))> 0 &&
+        length(trimspace(v.name_suffix))> 0 &&
         (
           contains(["gp3", "io1", "io2"], v.volume_type) ||
           try(v.volume_iops, null) == null
