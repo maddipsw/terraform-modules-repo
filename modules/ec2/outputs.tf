@@ -1,16 +1,16 @@
 output "instance_ids" {
   description = "List of EC2 instance IDs"
-  value       = aws_instance.this[*].id
+  value       = { for k, v in aws_instance.this : k => v.id }
 }
 
 output "private_ips" {
   description = "List of private IP addresses of the EC2 instances"
-  value       = aws_instance.this[*].private_ip
+  value       = { for k, v in aws_instance.this : k => v.private_ip }
 }
 
 output "availability_zones" {
   description = "List of availability zones where instances are deployed"
-  value       = aws_instance.this[*].availability_zone
+  value       = { for k, v in aws_instance.this : k => v.availability_zone }
 }
 
 output "computed_names" {
