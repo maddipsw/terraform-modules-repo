@@ -26,6 +26,7 @@ locals {
       instance_number = local.instance_numbers[idx]
       subnet_id       = var.subnet_ids[idx % length(var.subnet_ids)]
       instance_type   = lookup(var.instance_types_by_name, name, var.default_instance_type)
+      ami_id          =  var.ami_id
     }
   }
 
