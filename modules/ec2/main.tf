@@ -30,17 +30,31 @@ locals {
     }
   }
 
+  all_ebs_block_devices = concat(
+    var.ebs_block_devices,
+    flatten([for _, volumes in var.ebs_block_devices_by_instance : volumes])
+  )
+
+  resolved_ebs_block_devices_by_instance = {
+    for instance_name, instance in local.instances :
+    instance_name => lookup(
+      var.ebs_block_devices_by_instance,
+      instance_name,
+      var.ebs_block_devices
+    )
+  }
+
   additional_ebs_volumes = {
     for item in flatten([
-      for instance_name, instance in local.instances : [
-        for volume in var.ebs_block_devices : {
+      for instance_name, volumes in local.resolved_ebs_block_devices_by_instance : [
+        for volume in volumes : {
           key           = "${instance_name}-${volume.name_suffix}-${replace(volume.device_name, "/", "_")}"
           instance_name = instance_name
           device_name   = volume.device_name
           name_suffix   = volume.name_suffix
           volume_type   = volume.volume_type
           volume_size   = volume.volume_size
-          iops   = try(volume.volume_iops, null)
+          iops          = try(volume.volume_iops, null)
           throughput    = try(volume.throughput, null)
           kms_key_id    = try(volume.kms_key_id, null)
         }
@@ -97,14 +111,21 @@ check "root_volume_settings_valid" {
   }
 }
 
+check "instance_specific_ebs_keys_valid" {
+  assert {
+    condition     = alltrue([for k in keys(var.ebs_block_devices_by_instance) : contains(local.instance_names, k)])
+    error_message = "All keys in ebs_block_devices_by_instance must match generated instance names."
+  }
+}
+
 check "additional_ebs_settings_valid" {
   assert {
     condition = alltrue([
-      for v in var.ebs_block_devices : (
+      for v in local.all_ebs_block_devices : (
         contains(["gp2", "gp3", "io1", "io2", "st1", "sc1", "standard"], v.volume_type) &&
         v.volume_size > 0 &&
-        length(trimspace(v.device_name))> 0 &&
-        length(trimspace(v.name_suffix))> 0 &&
+        length(trimspace(v.device_name)) > 0 &&
+        length(trimspace(v.name_suffix)) > 0 &&
         (
           contains(["gp3", "io1", "io2"], v.volume_type) ||
           try(v.volume_iops, null) == null
@@ -115,10 +136,9 @@ check "additional_ebs_settings_valid" {
         )
       )
     ])
-    error_message = "Each ebs_block_devices entry must have valid type, size, device_name, and name_suffix. IOPS are only valid for gp3/io1/io2. Throughput is only valid for gp3."
+    error_message = "Each EBS volume entry must have valid type, size, device_name, and name_suffix. IOPS are only valid for gp3/io1/io2. Throughput is only valid for gp3."
   }
 }
-
 
 resource "aws_instance" "this" {
   for_each = local.instances
