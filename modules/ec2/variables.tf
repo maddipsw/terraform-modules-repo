@@ -151,6 +151,20 @@ variable "ebs_block_devices" {
   default = []
 }
 
+variable "ebs_block_devices_by_instance" {
+  description = "Optional per-instance EBS overrides keyed by computed instance name"
+  type = map(list(object({
+    name_suffix = string
+    device_name = string
+    volume_type = string
+    volume_size = number
+    volume_iops = optional(number)
+    throughput  = optional(number)
+    kms_key_id  = optional(string)
+  })))
+  default = {}
+}
+
 variable "enable_drift_detection" {
   description = "Enable drift detection data sources for monitoring configuration changes"
   type        = bool
